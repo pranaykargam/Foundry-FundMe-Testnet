@@ -14,8 +14,11 @@
 ## 🧱 Tech Stack
 
    ◆ Solidity (FundMe smart contract)
+
 ◆ Foundry (Forge + Cast) for testing & scripting
+
 ◆ Chainlink Price Feeds (Sepolia testnet)
+
 ◆ Sepolia deployment via Foundry scripts
 
 
