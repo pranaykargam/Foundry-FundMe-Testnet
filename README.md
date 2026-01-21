@@ -3,22 +3,21 @@
 ## Overview 🔍
 
 
-    ⭐️ Accepts ETH from multiple funders and tracks their contributions in USD.
+   ⭐ Accepts ETH contributions from multiple funders, tracking amounts in USD
 
-    ⭐️ Uses Chainlink AggregatorV3 to get on-chain ETH/USD price data.
+⭐ Fetches real-time ETH/USD price feeds via Chainlink Data AggregatorV3
 
-    ⭐️ Implements a gas-optimized withdraw function for the owner to pull funds efficiently.
+⭐ Gas-optimized withdraw function for efficient owner fund withdrawal
+
 
 
 ## 🧱 Tech Stack
 
-    ◆ Solidity (FundMe smart contract)
+   ◆ Solidity (FundMe smart contract)
+◆ Foundry (Forge + Cast) for testing & scripting
+◆ Chainlink Price Feeds (Sepolia testnet)
+◆ Sepolia deployment via Foundry scripts
 
-    ◆ Foundry (Forge + Cast) for tests and scripting
-
-    ◆ Chainlink price feeds on Sepolia
-
-    ◆ epolia testnet deployment via Foundry scripts
 
 
 
