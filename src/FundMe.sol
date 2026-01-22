@@ -11,17 +11,20 @@ contract FundMe {
     // Minimum contribution set to 5 USD (18 decimals)
     uint256 public constant MINIMUM_USD = 5e18;
 
+    AggregatorV3Interface private s_priceFeed;
+
     address[] public funders;
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
     address public immutable i_owner;
 
-    constructor() {
-        i_owner = msg.sender;
-    }
+  constructor(address priceFeed){
+    i_owner = msg.sender;
+    s_priceFeed = AggregatorV3Interface(priceFeed);
+}
 
     function fund() public payable {
-        require(msg.value.getConversionRate() >= MINIMUM_USD, "Send at least $5 worth of ETH");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Send at least $5 worth of ETH");
         funders.push(msg.sender);
         addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
     }
