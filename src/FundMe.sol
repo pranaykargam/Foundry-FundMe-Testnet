@@ -13,10 +13,10 @@ contract FundMe {
 
     AggregatorV3Interface private s_priceFeed;
 
-    address[] public funders;
-    mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
+    address[] public s_funders;
+    mapping(address funder => uint256 amountFunded) public s_addressToAmountFunded;
 
-    address public immutable i_owner;
+    address private immutable i_owner;
 
     constructor(address priceFeed) {
         i_owner = msg.sender;
@@ -25,17 +25,17 @@ contract FundMe {
 
     function fund() public payable {
         require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Send at least $5 worth of ETH");
-        funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] + msg.value;
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] = s_addressToAmountFunded[msg.sender] + msg.value;
     }
 
     function withdraw(uint256 amountToWithdraw) public onlyOwner {
-        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
-            address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+        for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) {
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
         }
         // reset the array
-        funders = new address[](0);
+        s_funders = new address[](0);
 
         // call
         (bool callSuccess,) = payable(msg.sender).call{value: amountToWithdraw}("");
@@ -61,5 +61,21 @@ contract FundMe {
 
     fallback() external payable {
         fund();
+    }
+
+    /**
+     *  Getter Functions
+     */
+
+    function getAddressToAmountFunded(address fundingAddress) external view returns (uint256) {
+        return s_addressToAmountFunded[fundingAddress];
+    }
+
+    function getFunder(uint256 index) external view returns (address) {
+        return s_funders[index];
+    }
+
+    function getOwner(uint256 index) external view returns (address) {
+        return s_funders[index];
     }
 }
