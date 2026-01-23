@@ -18,10 +18,10 @@ contract FundMe {
 
     address public immutable i_owner;
 
-  constructor(address priceFeed){
-    i_owner = msg.sender;
-    s_priceFeed = AggregatorV3Interface(priceFeed);
-}
+    constructor(address priceFeed) {
+        i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
+    }
 
     function fund() public payable {
         require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Send at least $5 worth of ETH");

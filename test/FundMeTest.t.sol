@@ -8,18 +8,17 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 contract FundMeTest is Test {
     FundMe fundMe;
 
-    function setUp() external{
+    function setUp() external {
         // fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
-
     }
 
-    function testMinimumDollarIsSeven() view public {
+    function testMinimumDollarIsSeven() public view {
         assertEq(fundMe.MINIMUM_USD(), 5e18);
     }
 
-    function testOwnerIsMsgSender() view  public {
+    function testOwnerIsMsgSender() public view {
         assertEq(fundMe.i_owner(), address(this));
     }
 
