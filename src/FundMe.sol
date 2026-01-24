@@ -8,7 +8,7 @@ error NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
-    // Minimum contribution set to 5 USD (18 decimals)
+
     uint256 public constant MINIMUM_USD = 5e18;
 
     AggregatorV3Interface private s_priceFeed;
@@ -24,36 +24,38 @@ contract FundMe {
     }
 
     function fund() public payable {
-        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "Send at least $5 worth of ETH");
+        require(
+            msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
+            "Send at least $5 worth of ETH"
+        );
         s_funders.push(msg.sender);
-        s_addressToAmountFunded[msg.sender] = s_addressToAmountFunded[msg.sender] + msg.value;
+        s_addressToAmountFunded[msg.sender] =
+            s_addressToAmountFunded[msg.sender] +
+            msg.value;
     }
 
-    function withdraw(uint256 amountToWithdraw) public onlyOwner {
+    // Make withdraw match the course (no amount parameter)
+    function withdraw() public onlyOwner {
         for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) {
             address funder = s_funders[funderIndex];
             s_addressToAmountFunded[funder] = 0;
         }
-        // reset the array
         s_funders = new address[](0);
 
-        // call
-        (bool callSuccess,) = payable(msg.sender).call{value: amountToWithdraw}("");
-
+        // withdraw full balance
+        (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
 
+    // Use the injected price feed instead of hardcoding (optional but better)
     function getVersion() public view returns (uint256) {
-        // Use the same Sepolia ETH/USD price feed address as PriceConverter
-        return AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306).version();
+        return s_priceFeed.version();
     }
 
     modifier onlyOwner() {
         if (msg.sender != i_owner) revert NotOwner();
-        _; // is a placeholder for the body of the function that uses the modifier.
+        _;
     }
-
-    // what happens if some one send this contract ETH without calling the fund function.
 
     receive() external payable {
         fund();
@@ -63,11 +65,13 @@ contract FundMe {
         fund();
     }
 
-    /**
-     *  Getter Functions
-     */
+    // Getter functions
 
-    function getAddressToAmountFunded(address fundingAddress) external view returns (uint256) {
+    function getAddressToAmountFunded(address fundingAddress)
+        external
+        view
+        returns (uint256)
+    {
         return s_addressToAmountFunded[fundingAddress];
     }
 
@@ -75,7 +79,8 @@ contract FundMe {
         return s_funders[index];
     }
 
-    function getOwner(uint256 index) external view returns (address) {
-        return s_funders[index];
+    // Proper owner getter – NO index parameter
+    function getOwner() external view returns (address) {
+        return i_owner;
     }
 }

@@ -11,6 +11,7 @@ contract FundMeTest is Test {
     address USER = makeAddr("user");
     uint256 constant SEND_VALUE = 0.1 ether; //100000000000000000
     uint256 constant STARTING_BALANCE = 10 ether;
+    uint256 constant GAS_PRICE = 1;
 
     function setUp() external {
         // fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
@@ -63,11 +64,14 @@ function testOnlyOwnerCanWithdraw() public funded{
 function testWithDrawWithASingleFunded() public funded{
     // arrange
     uint256 startingOwnerBalance = fundMe.getOwner().balance;
-    uint256 startingFundMeBalance = address(fundMe).balance
+    uint256 startingFundMeBalance = address(fundMe).balance;
 
     // act
-    vm.Prank(fundMe.getOwner());
-   fundMe.withdraw();
+    vm.startPrank(fundMe.getOwner());
+    fundMe.withdraw();
+    vm.stopPrank();
+
+   
   
     // asset
 
